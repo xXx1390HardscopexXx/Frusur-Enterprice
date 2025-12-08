@@ -1,17 +1,13 @@
 package Modelo;
 
-public class Agronomo extends Persona {
+import Utilidades.Rut;
+
+import java.io.Serializable;
+
+public class Agronomo extends Persona implements Serializable {
 
     public Agronomo(Rut rut, String nombre, String contacto) {
         super(rut, nombre, contacto);
-    }
-
-    public void charlaParaProductores(CharlaProductores charla) {
-        System.out.println("Agrónomo dando charla: " + charla.getDatosProduccion());
-    }
-
-    public void contactarProductor(Productor productor) {
-        productor.serContactado(this);
     }
 
     public AcuerdoCompra establecerAcuerdo(Productor productor) {
@@ -19,7 +15,5 @@ public class Agronomo extends Persona {
         return new AcuerdoCompra(productor, this, "Condiciones estándar");
     }
 
-    public CharlaProductores realizarCharla(Productor productor) {
-        return new CharlaProductores("Datos 2025", "Control Bio", "Prevención Std");
-    }
+
 }

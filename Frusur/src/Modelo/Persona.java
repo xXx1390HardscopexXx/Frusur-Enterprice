@@ -1,6 +1,10 @@
 package Modelo;
 
-public abstract class Persona {
+import Utilidades.Rut;
+
+import java.io.Serializable;
+
+public abstract class Persona implements Serializable {
     protected Rut rut;
     protected String nombre;
     protected String contacto; // En el diagrama aparece como contacto

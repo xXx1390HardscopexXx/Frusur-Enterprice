@@ -1,9 +1,10 @@
 package Modelo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Planilla {
+public class Planilla implements Serializable {
     private String lineaProceso;
     // Lista para guardar las tarjas
     private List<Tarja> tarjas = new ArrayList<>();

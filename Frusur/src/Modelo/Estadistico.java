@@ -1,75 +1,76 @@
 package Modelo;
 
-import java.util.List;
+// Asegúrate de importar tu clase Rut correctamente.
 
-public class Estadistico extends Persona {
-    // Asociaciones del diagrama
+import Utilidades.Rut;
+
+import java.io.Serializable;
+
+public class Estadistico extends Persona implements Serializable {
+
+    // Dependencias: A quién reporta y qué documento está trabajando
     private Supervisor supervisorTurno;
-    private Recepcion deptoRecepcion;
-    private JefeDeLinea jefaLineaAsignada; // Relación con JefeDeLinea
-    private Camara deptoCamara;
     private Planilla planillaActual;
 
     public Estadistico(Rut rut, String nombre, String contacto) {
         super(rut, nombre, contacto);
     }
 
-    // Setters para inyectar dependencias
-    public void setSupervisorTurno(Supervisor supervisorTurno) { this.supervisorTurno = supervisorTurno; }
-    public void setDeptoRecepcion(Recepcion deptoRecepcion) { this.deptoRecepcion = deptoRecepcion; }
-    public void setJefaLineaAsignada(JefeDeLinea jefaLineaAsignada) { this.jefaLineaAsignada = jefaLineaAsignada; }
-    public void setDeptoCamara(Camara deptoCamara) { this.deptoCamara = deptoCamara; }
-
-    // Métodos del diagrama
-    public void presentarseOficina() {
-        System.out.println("Estadístico marcando entrada en oficina.");
+    // --- Configuración (Inyección de Dependencias) ---
+    public void setSupervisorTurno(Supervisor supervisorTurno) {
+        this.supervisorTurno = supervisorTurno;
     }
 
-    public void recibirInstrucciones() {
-        if (supervisorTurno != null) {
-            System.out.println("Recibiendo: " + supervisorTurno.darInstrucciones());
-        }
+    // --- Lógica de Negocio (Inventario y Producción) ---
+
+    /**
+     * Inicia una nueva planilla digital para el turno.
+     * Requisito: Registrar la línea de proceso (Congelado, Selección, etc.).
+     * * @param nombreLinea El nombre de la línea donde se está trabajando.
+     */
+    public void desarrollarPlanilla(String nombreLinea) {
+        this.planillaActual = new Planilla();
+        this.planillaActual.setLineaProceso(nombreLinea);
+        System.out.println("Estadístico " + this.nombre + " inició planilla en: " + nombreLinea);
     }
 
-    public void irALinea(String linea) {
-        System.out.println("Moviéndose a línea: " + linea);
-    }
-
-    public void agregarInfoLinea(String info) {
-        System.out.println("Agregando info: " + info);
-    }
-
-    public void verProceso() {
-        System.out.println("Supervisando proceso visualmente.");
-    }
-
+    /**
+     * Registra el ingreso de una Tarja (Materia Prima) en la planilla actual.
+     * Cumple con: "Ingreso de datos desde las tarjas entregadas por recepción".
+     */
     public void agregarTarjas(Tarja tarja) {
         if (planillaActual != null) {
             planillaActual.agregarTarja(tarja);
+            System.out.println("   -> Tarja registrada: " + tarja.toString());
+        } else {
+            System.out.println("ERROR: No ha iniciado una planilla. Use desarrollarPlanilla() primero.");
         }
     }
 
-    public List<Tarja> recibirTarjas() {
-        if (deptoRecepcion != null) {
-            return deptoRecepcion.entregarTarjas(); // Asumiendo método en Recepción
-        }
-        return null;
-    }
-
+    /**
+     * Realiza el cierre de cálculos (suma de kilos procesados).
+     */
     public void calcularTotalKilos() {
         if (planillaActual != null) {
             planillaActual.calcularTotalKilos();
         }
     }
 
-    // Iniciar planilla nueva
-    public void desarrollarPlanilla() {
-        this.planillaActual = new Planilla();
-    }
-
+    /**
+     * Envía la información digitalizada al supervisor.
+     * Cumple con: "agilizar la entrega de información al supervisor"[cite: 223].
+     */
     public void entregarPlanillaASupervisor() {
         if (supervisorTurno != null && planillaActual != null) {
+            System.out.println("Entregando reporte al supervisor " + supervisorTurno.getNombre() + "...");
             supervisorTurno.recibirPlanilla(planillaActual);
+        } else {
+            System.out.println("ERROR: No se puede entregar (Falta Supervisor o Planilla vacía).");
         }
+    }
+
+    // Getter útil para que el Controlador pueda mostrar los datos en la Pantalla
+    public Planilla getPlanillaActual() {
+        return planillaActual;
     }
 }

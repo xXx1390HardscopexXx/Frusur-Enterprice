@@ -1,6 +1,8 @@
 package Modelo;
 
-public class MateriaPrima {
+import java.io.Serializable;
+
+public class MateriaPrima implements Serializable {
     private String tipoFruta;         // Atributo del diagrama
     private Productor productorOrigen; // Relación con Productor
     private double kilos;             // Necesario por lógica de negocio (aunque el diagrama a veces recorta atributos básicos)

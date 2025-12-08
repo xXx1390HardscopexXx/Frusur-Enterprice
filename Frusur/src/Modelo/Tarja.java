@@ -1,6 +1,8 @@
 package Modelo;
 
-public class Tarja {
+import java.io.Serializable;
+
+public class Tarja implements Serializable {
     // En el diagrama aparece como "intoProductoIngresado", asumimos error de OCR -> "info"
     private String infoProductoIngresado;
 
