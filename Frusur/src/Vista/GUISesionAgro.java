@@ -53,6 +53,7 @@ public class GUISesionAgro extends JDialog {
             if(cuenta.isPresent()){
                 if (cuenta.get().getContrasena().equals(contrasenaText.getText())){
                     dispose();
+                    GUIGestionCompraProv.display();
                 }else{
                     JOptionPane.showMessageDialog
                             (this, "La contraseña es incorrecta");

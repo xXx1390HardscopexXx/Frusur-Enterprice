@@ -51,10 +51,12 @@ public class GUIGestionCompraProv extends JDialog {
         dispose();
     }
 
-    public static void main(String[] args) {
+    public static void display() {
         GUIGestionCompraProv dialog = new GUIGestionCompraProv();
         dialog.pack();
+        dialog.setSize(700, 400);
+        dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
-        System.exit(0);
+        dialog.setAlwaysOnTop(true);
     }
 }
