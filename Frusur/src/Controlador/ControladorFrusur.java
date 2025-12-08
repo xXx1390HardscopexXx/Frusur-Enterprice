@@ -35,7 +35,7 @@ public class ControladorFrusur implements Serializable {
     }
 
     public void createCuentaEstadi(String usuario, String contrasena) throws CFException {
-        if (findAgronomo(usuario).isPresent()){
+        if (findEstadistico(usuario).isPresent()){
             throw new CFException("Ya existe un estadistico con ese usuario");
         }
         CuentaEstadi ce = new CuentaEstadi(usuario, contrasena);

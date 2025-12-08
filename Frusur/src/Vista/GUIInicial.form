@@ -89,7 +89,7 @@
             </constraints>
             <properties>
               <icon value="Vista/icons/Diseño sin título.png"/>
-              <text value="               Sistema Ventas e Inventario Frusur"/>
+              <text value="              Sistema Compra e Inventario Frusur"/>
             </properties>
           </component>
           <component id="59a10" class="javax.swing.JButton" binding="crearCuentaButton" default-binding="true">
