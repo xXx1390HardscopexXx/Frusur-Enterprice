@@ -3,23 +3,26 @@ package Modelo;
 import java.io.Serializable;
 
 public class Tarja implements Serializable {
-    // En el diagrama aparece como "intoProductoIngresado", asumimos error de OCR -> "info"
-    private String infoProductoIngresado;
+    private TipoBerrie tipoBerrie;
+    private ClasificacionProducto clasificacion;
+    private double kilos;
+    private String detalle; // opcional: lote, observación, etc.
 
-    public Tarja(String infoProductoIngresado) {
-        this.infoProductoIngresado = infoProductoIngresado;
+    public Tarja(TipoBerrie tipoBerrie, ClasificacionProducto clasificacion, double kilos, String detalle) {
+        this.tipoBerrie = tipoBerrie;
+        this.clasificacion = clasificacion;
+        this.kilos = kilos;
+        this.detalle = detalle;
     }
 
-    public String getInfoProductoIngresado() {
-        return infoProductoIngresado;
-    }
-
-    public void setInfoProductoIngresado(String infoProductoIngresado) {
-        this.infoProductoIngresado = infoProductoIngresado;
-    }
+    public TipoBerrie getTipoBerrie() { return tipoBerrie; }
+    public ClasificacionProducto getClasificacion() { return clasificacion; }
+    public double getKilos() { return kilos; }
+    public String getDetalle() { return detalle; }
 
     @Override
     public String toString() {
-        return "Tarja: " + infoProductoIngresado;
+        return "Tarja: " + tipoBerrie + " - " + clasificacion + " - " + kilos + " kg" +
+                (detalle != null && !detalle.isBlank() ? " (" + detalle + ")" : "");
     }
 }
