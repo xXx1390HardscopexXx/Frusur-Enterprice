@@ -21,6 +21,8 @@ public class ControladorFrusur implements Serializable {
     // Nuevo atributo para el inventario global de fruta recibida
     private double totalKilosAcumulados = 0;
 
+    private Modelo.Inventario inventario = new Modelo.Inventario();
+
     private ControladorFrusur() {}
 
     public static ControladorFrusur getInstance() {
@@ -221,4 +223,9 @@ public class ControladorFrusur implements Serializable {
     public double getTotalKilosAcumulados() {
         return totalKilosAcumulados;
     }
+
+    public Modelo.Inventario getInventario() {
+        return inventario;
+    }
+
 }

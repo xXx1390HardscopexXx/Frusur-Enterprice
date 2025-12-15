@@ -1,15 +1,16 @@
 package Modelo;
 
 import Utilidades.Codigo;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Palet implements Serializable {
-    // El diagrama muestra una relación de 1 a muchos con Caja
     private List<Caja> cajas;
-    private String idPalet; // Identificador del palet completo
+    private String idPalet;
+    private TipoBerrie tipoBerrie;
+    private ClasificacionProducto clasificacion;
+    private EstadoPalet estado = EstadoPalet.EN_STOCK;
 
     public Palet(String idPalet) {
         this.idPalet = idPalet;
@@ -23,24 +24,43 @@ public class Palet implements Serializable {
     public List<Caja> getCajas() {
         return cajas;
     }
-
     public String getIdPalet() {
         return idPalet;
     }
 
-    // obtenemos codigos de las cajas dentro del paalet
+    public TipoBerrie getTipoBerrie() {
+        return tipoBerrie;
+    }
+    public void setTipoBerrie(TipoBerrie tipoBerrie) {
+        this.tipoBerrie = tipoBerrie;
+    }
+
+    public ClasificacionProducto getClasificacion() {
+        return clasificacion;
+    }
+    public void setClasificacion(ClasificacionProducto clasificacion) {
+        this.clasificacion = clasificacion;
+    }
+
+    public EstadoPalet getEstado() {
+        return estado;
+    }
+    public void setEstado(EstadoPalet estado) {
+        this.estado = estado;
+    }
+
     public List<Codigo> obtenerCodigosDelPalet() {
         List<Codigo> listaCodigos = new ArrayList<>();
         for (Caja c : cajas) {
-            if (c.getCodigoAsignado() != null) {
-                listaCodigos.add(c.getCodigoAsignado());
-            }
+            if (c.getCodigoAsignado() != null) listaCodigos.add(c.getCodigoAsignado());
         }
         return listaCodigos;
     }
 
     @Override
     public String toString() {
-        return "Palet " + idPalet + " (Contiene " + cajas.size() + " cajas)";
+        return "Palet " + idPalet + " (" + cajas.size() + " cajas) " +
+                (tipoBerrie != null ? tipoBerrie : "-") + " " +
+                (clasificacion != null ? clasificacion : "-") + " " + estado;
     }
 }

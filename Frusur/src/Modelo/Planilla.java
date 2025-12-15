@@ -32,4 +32,6 @@ public class Planilla implements Serializable {
         }
         return resumen;
     }
+
+
 }
