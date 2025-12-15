@@ -12,10 +12,13 @@ import java.util.Optional;
 public class ControladorFrusur implements Serializable {
     private static ControladorFrusur instance;
 
+    // Listas de usuarios y entidades
     private ArrayList<CuentaAgro> cuentasAgro = new ArrayList<>();
     private ArrayList<CuentaEstadi> cuentasEstadi = new ArrayList<>();
     private ArrayList<Productor> productores = new ArrayList<>();
     private ArrayList<Supervisor> supervisores = new ArrayList<>();
+    private ArrayList<Modelo.ResumenProduccion> historicoProduccion = new ArrayList<>();
+    // Nuevo atributo para el inventario global de fruta recibida
     private double totalKilosAcumulados = 0;
 
     private ControladorFrusur() {}
@@ -26,6 +29,10 @@ public class ControladorFrusur implements Serializable {
         }
         return instance;
     }
+
+    // ---------------------------------------------------------
+    // MÉTODOS DE CREACIÓN DE USUARIOS (Legacy)
+    // ---------------------------------------------------------
 
     public void createCuentaAgronomo(String usuario, String contrasena) throws CFException {
         if (findAgronomo(usuario).isPresent()){
@@ -60,6 +67,9 @@ public class ControladorFrusur implements Serializable {
         productores.add(newProductor);
     }
 
+    // ---------------------------------------------------------
+    // MÉTODOS DE PERSISTENCIA
+    // ---------------------------------------------------------
 
     public void guardar() throws CFException {
         Object[] controladores = {this};
@@ -76,6 +86,9 @@ public class ControladorFrusur implements Serializable {
         }
     }
 
+    // ---------------------------------------------------------
+    // MÉTODOS DE BÚSQUEDA (FINDERS)
+    // ---------------------------------------------------------
 
     public Optional<CuentaAgro> findAgronomo(String usuario){
         for (CuentaAgro agronomo : cuentasAgro){
@@ -86,6 +99,7 @@ public class ControladorFrusur implements Serializable {
         return Optional.empty();
     }
 
+    // Lo dejé privado porque los métodos públicos nuevos lo usan internamente
     private Optional<Productor> findProductor(Rut rut){
         for (Productor productor : productores){
             if (productor.getRut().equals(rut)){
@@ -113,11 +127,20 @@ public class ControladorFrusur implements Serializable {
         return Optional.empty();
     }
 
+    // ---------------------------------------------------------
+    // NUEVA LÓGICA DE NEGOCIO (COMPRA DE MATERIA PRIMA)
+    // ---------------------------------------------------------
+
+    /**
+     * Retorna la lista completa de productores para llenado de tablas en la GUI.
+     */
     public ArrayList<Productor> getProductores() {
         return this.productores;
     }
 
-     //Crea un productor si no existe, o actualiza uno existente, y le asigna una nueva solicitud de compra.
+    /**
+     * Crea un productor si no existe, o actualiza uno existente, y le asigna una nueva solicitud de compra.
+     */
     public void gestionarCompraProductor(Rut rut, String nombre, String contacto, TipoBerrie berrie, double kilos) throws CFException {
         if (kilos <= 0) {
             throw new CFException("La cantidad de kilos debe ser mayor a 0.");
@@ -147,7 +170,9 @@ public class ControladorFrusur implements Serializable {
         p.nuevaSolicitud(berrie, kilos);
     }
 
-     /// Máquina de estados para avanzar en el proceso de compra (Contrato -> Charla -> Recepción).
+    /**
+     * Máquina de estados para avanzar en el proceso de compra (Contrato -> Charla -> Recepción).
+     */
     public String avanzarEstadoProductor(Productor p, boolean aceptado) throws CFException {
         EstadoProductor actual = p.getEstado();
 
@@ -179,6 +204,19 @@ public class ControladorFrusur implements Serializable {
                 return "El productor no tiene acciones pendientes.";
         }
     }
+
+
+    public void registrarProduccion(ResumenProduccion resumen) throws CFException {
+        if (resumen == null) throw new CFException("Resumen nulo.");
+        if (resumen.getTotalGeneral() <= 0) throw new CFException("Resumen sin producción.");
+        historicoProduccion.add(resumen);
+    }
+
+    public ArrayList<ResumenProduccion> getHistoricoProduccion() {
+        return historicoProduccion;
+    }
+
+
 
     public double getTotalKilosAcumulados() {
         return totalKilosAcumulados;

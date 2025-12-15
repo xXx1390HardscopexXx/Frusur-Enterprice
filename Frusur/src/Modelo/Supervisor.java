@@ -17,8 +17,17 @@ public class Supervisor extends Persona implements Serializable {
     }
 
     public void recibirPlanilla(Planilla planilla) {
-        System.out.println("Supervisor " + this.nombre + " valida planilla con " + planilla.getTotalKilos() + " kg.");
+        ResumenProduccion resumen = planilla.generarResumen();
+
+        System.out.println(
+                "Supervisor " + this.nombre +
+                        " valida planilla - Total: " +
+                        resumen.getTotalGeneral() + " kg " +
+                        "(IQF: " + resumen.getTotalIQF() +
+                        " | Subproducto: " + resumen.getTotalSubproducto() + ")"
+        );
     }
+
 
     public void digitalizarInformacion(Planilla planilla) {
         System.out.println("Guardando planilla en base de datos...");

@@ -12,6 +12,7 @@ public class Estadistico extends Persona implements Serializable {
     private Supervisor supervisorTurno;
     private Planilla planillaActual;
 
+
     public Estadistico(Rut rut, String nombre, String contacto) {
         super(rut, nombre, contacto);
     }
@@ -31,30 +32,24 @@ public class Estadistico extends Persona implements Serializable {
     public void desarrollarPlanilla(String nombreLinea) {
         this.planillaActual = new Planilla();
         this.planillaActual.setLineaProceso(nombreLinea);
-        System.out.println("Estadístico " + this.nombre + " inició planilla en: " + nombreLinea);
     }
+
 
     /**
      * Registra el ingreso de una Tarja (Materia Prima) en la planilla actual.
      * Cumple con: "Ingreso de datos desde las tarjas entregadas por recepción".
      */
-    public void agregarTarjas(Tarja tarja) {
-        if (planillaActual != null) {
-            planillaActual.agregarTarja(tarja);
-            System.out.println("   -> Tarja registrada: " + tarja.toString());
-        } else {
-            System.out.println("ERROR: No ha iniciado una planilla. Use desarrollarPlanilla() primero.");
-        }
+    public void agregarTarja(Tarja tarja) {
+        if (planillaActual == null)
+            throw new RuntimeException("Debe iniciar planilla primero.");
+        planillaActual.agregarTarja(tarja);
     }
+
 
     /**
      * Realiza el cierre de cálculos (suma de kilos procesados).
      */
-    public void calcularTotalKilos() {
-        if (planillaActual != null) {
-            planillaActual.calcularTotalKilos();
-        }
-    }
+
 
     /**
      * Envía la información digitalizada al supervisor.
@@ -62,12 +57,16 @@ public class Estadistico extends Persona implements Serializable {
      */
     public void entregarPlanillaASupervisor() {
         if (supervisorTurno != null && planillaActual != null) {
-            System.out.println("Entregando reporte al supervisor " + supervisorTurno.getNombre() + "...");
             supervisorTurno.recibirPlanilla(planillaActual);
-        } else {
-            System.out.println("ERROR: No se puede entregar (Falta Supervisor o Planilla vacía).");
         }
     }
+
+    public ResumenProduccion cerrarPlanilla() {
+        if (planillaActual == null)
+            throw new RuntimeException("No hay planilla activa.");
+        return planillaActual.generarResumen();
+    }
+
 
     // Getter útil para que el Controlador pueda mostrar los datos en la Pantalla
     public Planilla getPlanillaActual() {
