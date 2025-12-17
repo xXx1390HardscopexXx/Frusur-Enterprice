@@ -136,6 +136,7 @@ public class ControladorFrusur implements Serializable {
         Object[] controladores = IOCF.getInstance().cargar();
         for (Object controlador : controladores) {
             if (controlador instanceof ControladorFrusur) {
+                // Esta línea es la clave: recupera todo el objeto, incluyendo el inventario
                 instance = (ControladorFrusur) controlador;
             }
         }
