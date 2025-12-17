@@ -1,5 +1,6 @@
 package Vista;
 
+import Excepciones.CFException;
 import Modelo.*;
 
 import javax.swing.*;
@@ -8,7 +9,6 @@ import java.awt.*;
 
 public class GUIInventarioEstadistico extends JDialog {
 
-    // Estado local de la GUI (tu planilla del turno)
     private Planilla planillaActual;
 
     // UI
@@ -154,16 +154,18 @@ public class GUIInventarioEstadistico extends JDialog {
             return;
         }
 
+        TipoBerrie tipo = (TipoBerrie) cmbTipo.getSelectedItem(); // Obtener el tipo seleccionado
+
         try {
-            // intenta descontar del stock global del controlador
-            Controlador.ControladorFrusur.getInstance().consumirMateriaPrima(kilos);
-        } catch (Exception ex) {
-            // si falla (no hay stock), muestra el error y no crea la tarja
+            // Ahora llamamos al nuevo método que valida por tipo de fruta
+            Controlador.ControladorFrusur.getInstance().consumirMateriaPrimaPorTipo(tipo, kilos);
+        } catch (CFException ex) {
+            // Si no hay stock de ESA fruta, muestra el mensaje de error
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Stock", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        // ---------------------------
 
-        TipoBerrie tipo = (TipoBerrie) cmbTipo.getSelectedItem();
         ClasificacionProducto clasif = (ClasificacionProducto) cmbClasif.getSelectedItem();
         String detalle = txtDetalle.getText().trim();
 
