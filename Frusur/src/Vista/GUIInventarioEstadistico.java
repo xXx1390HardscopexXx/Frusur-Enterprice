@@ -154,6 +154,15 @@ public class GUIInventarioEstadistico extends JDialog {
             return;
         }
 
+        try {
+            // intenta descontar del stock global del controlador
+            Controlador.ControladorFrusur.getInstance().consumirMateriaPrima(kilos);
+        } catch (Exception ex) {
+            // si falla (no hay stock), muestra el error y no crea la tarja
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Stock", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         TipoBerrie tipo = (TipoBerrie) cmbTipo.getSelectedItem();
         ClasificacionProducto clasif = (ClasificacionProducto) cmbClasif.getSelectedItem();
         String detalle = txtDetalle.getText().trim();
@@ -168,7 +177,6 @@ public class GUIInventarioEstadistico extends JDialog {
                 detalle.isEmpty() ? "-" : detalle
         });
 
-        // limpiar campos rápidos
         txtKilos.setText("");
         txtDetalle.setText("");
         txtKilos.requestFocus();

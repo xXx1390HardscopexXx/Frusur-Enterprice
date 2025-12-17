@@ -228,4 +228,16 @@ public class ControladorFrusur implements Serializable {
         return inventario;
     }
 
+
+    public void consumirMateriaPrima(double kilosRequeridos) throws CFException {
+        // valida si hay saldo suficiente en la planta
+        if (kilosRequeridos > this.totalKilosAcumulados) {
+            throw new CFException("Stock insuficiente en planta. " +
+                    "Disponible: " + this.totalKilosAcumulados + " kg. " +
+                    "Solicitado: " + kilosRequeridos + " kg.");
+        }
+
+        // si hay saldo lo descuenta
+        this.totalKilosAcumulados -= kilosRequeridos;
+    }
 }
