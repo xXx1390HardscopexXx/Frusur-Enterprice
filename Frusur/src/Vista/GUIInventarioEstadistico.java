@@ -1,5 +1,6 @@
 package Vista;
 
+import Controlador.ControladorFrusur;
 import Excepciones.CFException;
 import Modelo.*;
 
@@ -51,7 +52,7 @@ public class GUIInventarioEstadistico extends JDialog {
         txtLinea = new JTextField(25);
         panelLinea.add(txtLinea);
 
-        btnIniciarPlanilla = new JButton("Iniciar planilla");
+        btnIniciarPlanilla = new JButton("Iniciar/Recuperar planilla");
         panelLinea.add(btnIniciarPlanilla);
 
         panelTop.add(panelLinea, BorderLayout.CENTER);
@@ -84,7 +85,7 @@ public class GUIInventarioEstadistico extends JDialog {
         btnAgregarTarja = new JButton("Agregar tarja");
         panelForm.add(btnAgregarTarja);
 
-        btnCerrarPlanilla = new JButton("Cerrar planilla (Resumen)");
+        btnCerrarPlanilla = new JButton("Finalizar Proceso");
         panelForm.add(btnCerrarPlanilla);
 
         panelCenter.add(panelForm, BorderLayout.NORTH);
@@ -126,13 +127,21 @@ public class GUIInventarioEstadistico extends JDialog {
             return;
         }
 
-        planillaActual = new Planilla();
-        planillaActual.setLineaProceso(linea);
+        planillaActual = ControladorFrusur.getInstance().iniciarORecuperarPlanilla(linea);
 
+        // Limpiar y cargar datos existentes en la tabla visual
         modelTarjas.setRowCount(0);
-        setFormEnabled(true);
+        for (Tarja t : planillaActual.getTarjas()) {
+            modelTarjas.addRow(new Object[]{
+                    t.getTipoBerrie(),
+                    t.getClasificacion(),
+                    t.getKilos(),
+                    (t.getDetalle() == null || t.getDetalle().isEmpty()) ? "-" : t.getDetalle()
+            });
+        }
 
-        JOptionPane.showMessageDialog(this, "Planilla iniciada en: " + linea);
+        setFormEnabled(true);
+        JOptionPane.showMessageDialog(this, "Planilla activa para: " + linea);
     }
 
     private void agregarTarja() {
@@ -154,17 +163,14 @@ public class GUIInventarioEstadistico extends JDialog {
             return;
         }
 
-        TipoBerrie tipo = (TipoBerrie) cmbTipo.getSelectedItem(); // Obtener el tipo seleccionado
+        TipoBerrie tipo = (TipoBerrie) cmbTipo.getSelectedItem();
 
         try {
-            // Ahora llamamos al nuevo método que valida por tipo de fruta
-            Controlador.ControladorFrusur.getInstance().consumirMateriaPrimaPorTipo(tipo, kilos);
+            ControladorFrusur.getInstance().consumirMateriaPrimaPorTipo(tipo, kilos);
         } catch (CFException ex) {
-            // Si no hay stock de ESA fruta, muestra el mensaje de error
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Stock", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // ---------------------------
 
         ClasificacionProducto clasif = (ClasificacionProducto) cmbClasif.getSelectedItem();
         String detalle = txtDetalle.getText().trim();
@@ -194,39 +200,28 @@ public class GUIInventarioEstadistico extends JDialog {
             return;
         }
 
-        ResumenProduccion resumen = planillaActual.generarResumen();
         try {
-            Controlador.ControladorFrusur.getInstance().registrarProduccion(resumen);
+            ResumenProduccion resumen = planillaActual.generarResumen();
+            ControladorFrusur.getInstance().finalizarPlanillaActual(resumen);
+
+            // Mostrar Resumen
+            StringBuilder sb = new StringBuilder();
+            sb.append("Línea: ").append(resumen.getLineaProceso()).append("\n\n");
+            sb.append("TOTAL GENERAL: ").append(resumen.getTotalGeneral()).append(" kg\n");
+            sb.append("Total IQF: ").append(resumen.getTotalIQF()).append(" kg\n");
+            sb.append("Total Subproducto: ").append(resumen.getTotalSubproducto()).append(" kg\n");
+
+            JOptionPane.showMessageDialog(this, sb.toString(), "Resumen de Producción Guardado", JOptionPane.INFORMATION_MESSAGE);
+
+            // Limpiar Interfaz
+            planillaActual = null;
+            modelTarjas.setRowCount(0);
+            setFormEnabled(false);
+            txtLinea.setText("");
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return;
         }
-
-
-        // Mensaje resumen (simple y claro)
-        StringBuilder sb = new StringBuilder();
-        sb.append("Línea: ").append(resumen.getLineaProceso()).append("\n\n");
-        sb.append("Total IQF: ").append(resumen.getTotalIQF()).append(" kg\n");
-        sb.append("Total Subproducto: ").append(resumen.getTotalSubproducto()).append(" kg\n");
-        sb.append("TOTAL GENERAL: ").append(resumen.getTotalGeneral()).append(" kg\n\n");
-
-        sb.append("Detalle por tipo (IQF):\n");
-        for (TipoBerrie t : TipoBerrie.values()) {
-            sb.append(" - ").append(t.name()).append(": ").append(resumen.getKilosIQF().get(t)).append(" kg\n");
-        }
-
-        sb.append("\nDetalle por tipo (Subproducto):\n");
-        for (TipoBerrie t : TipoBerrie.values()) {
-            sb.append(" - ").append(t.name()).append(": ").append(resumen.getKilosSubproducto().get(t)).append(" kg\n");
-        }
-
-        JOptionPane.showMessageDialog(this, sb.toString(), "Resumen de Producción", JOptionPane.INFORMATION_MESSAGE);
-
-        // Aquí es donde se lo pasarías al inventario de tu compañero:
-        // inventario.agregarProduccion(resumen);
-
-        // opcional: dejar lista para un nuevo turno
-        // planillaActual = null; setFormEnabled(false);
     }
 
     private void setFormEnabled(boolean enabled) {
