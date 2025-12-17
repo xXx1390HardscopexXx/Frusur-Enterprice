@@ -1,17 +1,15 @@
 package Modelo;
 
 import Utilidades.Codigo;
-
 import java.io.Serializable;
 import java.util.*;
 
 public class Inventario implements Serializable {
 
-    // Stock en kilos, separado por clasificación
     private final Map<TipoBerrie, Double> stockIQF = new EnumMap<>(TipoBerrie.class);
     private final Map<TipoBerrie, Double> stockSub = new EnumMap<>(TipoBerrie.class);
 
-    // Trazabilidad
+    // Mapas para trazabilidad exigida por el proceso
     private final Map<String, Caja> cajasPorCodigo = new HashMap<>();
     private final Map<String, Palet> paletsPorId = new HashMap<>();
 
@@ -22,7 +20,11 @@ public class Inventario implements Serializable {
         }
     }
 
-    // INGRESO DE PRODUCCIÓN
+    public void agregarFrutaDesdeRecepcion(TipoBerrie tipo, double kilos) {
+        double actual = stockIQF.getOrDefault(tipo, 0.0);
+        stockIQF.put(tipo, actual + kilos);
+    }
+
     public void agregarProduccion(ResumenProduccion resumen) {
         for (TipoBerrie t : TipoBerrie.values()) {
             stockIQF.put(t, stockIQF.get(t) + resumen.getKilosIQF().get(t));
@@ -30,49 +32,53 @@ public class Inventario implements Serializable {
         }
     }
 
+    /**
+     * Descuenta kilos de materia prima (IQF) para pasar a producción.
+     */
+    public void descontarMateriaPrima(TipoBerrie tipo, double kilos) {
+        double actual = stockIQF.getOrDefault(tipo, 0.0);
+        // Ya validamos en el controlador que no sea negativo, así que restamos
+        stockIQF.put(tipo, actual - kilos);
+    }
+
     public double getStock(TipoBerrie tipo, ClasificacionProducto clasif) {
         return (clasif == ClasificacionProducto.IQF) ? stockIQF.get(tipo) : stockSub.get(tipo);
     }
 
-    // CREACIÓN DE PALETS (80 cajas)
-    public Palet crearPaletDesdeStock(
-            TipoBerrie tipo,
-            ClasificacionProducto clasif,
-            int cantidadCajas,
-            double kilosPorCaja
-    ) {
-        if (cantidadCajas <= 0) throw new IllegalArgumentException("cantidadCajas debe ser > 0");
-        if (kilosPorCaja <= 0) throw new IllegalArgumentException("kilosPorCaja debe ser > 0");
+    // --- MÉTODOS QUE FALTABAN PARA LA GUI ---
 
+    public Palet crearPalet80DesdeStock(TipoBerrie tipo, ClasificacionProducto clasif, double kilosPorCaja) {
+        // Un palet en Frusur consta de 80 cajas
+        return crearPaletDesdeStock(tipo, clasif, 80, kilosPorCaja);
+    }
+
+    public Palet crearPaletDesdeStock(TipoBerrie tipo, ClasificacionProducto clasif, int cantidadCajas, double kilosPorCaja) {
         double kilosNecesarios = cantidadCajas * kilosPorCaja;
         double disponible = getStock(tipo, clasif);
+
         if (disponible < kilosNecesarios) {
-            throw new IllegalArgumentException("Stock insuficiente. Disponible: " + disponible + "kg, necesario: " + kilosNecesarios + "kg");
+            throw new IllegalArgumentException("Stock insuficiente de " + tipo + ". Disponible: " + disponible + "kg");
         }
 
-        // Descontar stock
         if (clasif == ClasificacionProducto.IQF) {
             stockIQF.put(tipo, stockIQF.get(tipo) - kilosNecesarios);
         } else {
             stockSub.put(tipo, stockSub.get(tipo) - kilosNecesarios);
         }
 
-        // Crear palet
-        String idPalet = "PAL-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+        String idPalet = "PAL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         Palet palet = new Palet(idPalet);
         palet.setClasificacion(clasif);
         palet.setTipoBerrie(tipo);
-        palet.setEstado(EstadoPalet.EN_STOCK);
 
-        // Crear cajas con códigos
         for (int i = 1; i <= cantidadCajas; i++) {
             Caja c = new Caja(tipo.name() + " " + clasif.name());
+            c.setKilos(kilosPorCaja);
             c.setTipoBerrie(tipo);
             c.setClasificacion(clasif);
-            c.setKilos(kilosPorCaja);
-            c.setEstado(EstadoCaja.EN_STOCK);
 
-            String info = tipo.name() + "-" + clasif.name() + "-Caja" + i + "-" + idPalet;
+            // Generación de códigos para el despacho
+            String info = tipo.name() + "-" + clasif.name() + "-Caja" + i;
             Codigo cod = ServicioCodigo.generarCodigo(info);
             c.setCodigoAsignado(cod);
 
@@ -84,30 +90,22 @@ public class Inventario implements Serializable {
         return palet;
     }
 
-    // Conveniencia: 80 cajas por defecto
-    public Palet crearPalet80DesdeStock(TipoBerrie tipo, ClasificacionProducto clasif, double kilosPorCaja) {
-        return crearPaletDesdeStock(tipo, clasif, 80, kilosPorCaja);
-    }
-
-    // ESCANEO / DESPACHO
     public String escanearCodigoParaDespacho(String codigoBarras) {
         if (codigoBarras == null || codigoBarras.isBlank()) return "Código vacío.";
-
         Caja caja = cajasPorCodigo.get(codigoBarras.trim());
-        if (caja == null) return "Código no encontrado en inventario.";
 
-        if (caja.getEstado() == EstadoCaja.DESPACHADA) {
-            return "La caja ya estaba despachada (no se descuenta de nuevo).";
-        }
+        if (caja == null) return "Código no encontrado.";
+        if (caja.getEstado() == EstadoCaja.DESPACHADA) return "La caja ya fue despachada.";
 
-        caja.setEstado(EstadoCaja.DESPACHADA);
-        return "Caja despachada correctamente: " + caja.toString();
+        caja.setEstado(EstadoCaja.DESPACHADA); // El departamento de Cámara pistolea los códigos
+        return "Despacho exitoso: " + caja.toString();
     }
 
-    // CONSULTAS
-    public Map<TipoBerrie, Double> getStockIQF() { return stockIQF; }
-    public Map<TipoBerrie, Double> getStockSub() { return stockSub; }
+    public Collection<Palet> getPalets() {
+        return paletsPorId.values();
+    }
 
-    public Collection<Palet> getPalets() { return paletsPorId.values(); }
-    public int getCantidadCajasRegistradas() { return cajasPorCodigo.size(); }
+    public int getCantidadCajasRegistradas() {
+        return cajasPorCodigo.size();
+    }
 }
