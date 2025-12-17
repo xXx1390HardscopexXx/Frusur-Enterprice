@@ -17,6 +17,7 @@ public class ControladorFrusur implements Serializable {
     private ArrayList<Productor> productores = new ArrayList<>();
     private ArrayList<Supervisor> supervisores = new ArrayList<>();
     private ArrayList<Modelo.ResumenProduccion> historicoProduccion = new ArrayList<>();
+    private Planilla planillaEnCurso;
 
     private Modelo.Inventario inventario = new Modelo.Inventario();
     private double totalKilosAcumulados = 0;
@@ -142,6 +143,27 @@ public class ControladorFrusur implements Serializable {
         }
     }
 
+    // Método para iniciar o recuperar una planilla
+    public Planilla iniciarORecuperarPlanilla(String nombreLinea) {
+        if (planillaEnCurso != null && planillaEnCurso.getLineaProceso().equals(nombreLinea)) {
+            return planillaEnCurso; // Retorna la que ya existía
+        }
+        // Si es nueva o diferente, crea una nueva
+        planillaEnCurso = new Planilla();
+        planillaEnCurso.setLineaProceso(nombreLinea);
+        return planillaEnCurso;
+    }
+
+    // Método para finalizar y limpiar
+    public void finalizarPlanillaActual(ResumenProduccion resumen) throws CFException {
+        registrarProduccion(resumen); // Ya lo teníamos, guarda en el histórico
+        this.planillaEnCurso = null; // Limpia la planilla actual para que la próxima sea nueva
+    }
+
+    public Planilla getPlanillaEnCurso() {
+        return planillaEnCurso;
+    }
+
     public void createCuentaAgronomo(String usuario, String contrasena) throws CFException {
         if (findAgronomo(usuario).isPresent()) throw new CFException("Usuario ya existe.");
         cuentasAgro.add(new CuentaAgro(usuario, contrasena));
@@ -163,4 +185,5 @@ public class ControladorFrusur implements Serializable {
     private Optional<Productor> findProductor(Rut rut){
         return productores.stream().filter(p -> p.getRut().equals(rut)).findFirst();
     }
+
 }
