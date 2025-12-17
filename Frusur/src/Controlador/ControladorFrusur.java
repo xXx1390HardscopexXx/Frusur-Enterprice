@@ -15,7 +15,6 @@ public class ControladorFrusur implements Serializable {
     private ArrayList<CuentaAgro> cuentasAgro = new ArrayList<>();
     private ArrayList<CuentaEstadi> cuentasEstadi = new ArrayList<>();
     private ArrayList<Productor> productores = new ArrayList<>();
-    private ArrayList<Supervisor> supervisores = new ArrayList<>();
     private ArrayList<Modelo.ResumenProduccion> historicoProduccion = new ArrayList<>();
     private Planilla planillaEnCurso;
 
