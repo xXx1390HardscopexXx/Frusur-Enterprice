@@ -14,6 +14,7 @@ public class GUIInventarioFisico extends JDialog {
     private JTextArea txtSalida;
     private JTextField txtCodigoScan;
 
+
     public GUIInventarioFisico() {
         setTitle("Inventario Físico - Stock / Palets / Escaneo");
         setModal(true);

@@ -117,6 +117,7 @@ public class GUIInventarioEstadistico extends JDialog {
         add(panelBottom, BorderLayout.SOUTH);
 
 
+
         // Estado inicial
         setFormEnabled(false);
     }
