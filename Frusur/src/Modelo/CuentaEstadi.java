@@ -3,8 +3,8 @@ package Modelo;
 import java.io.Serializable;
 
 public class CuentaEstadi implements Serializable {
-    String usuario;
-    String contrasena;
+    private String usuario;
+    private String contrasena;
 
     public CuentaEstadi(String usuario, String contrasena) {
         this.usuario = usuario;
