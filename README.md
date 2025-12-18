@@ -18,7 +18,7 @@ Para ejecutar y editar este proyecto correctamente, se requiere:
 1.  Clonar el repositorio o descargar el código fuente.
 2.  Abrir el proyecto en IntelliJ IDEA.
 3.  Esperar a que el IDE indexe las dependencias y reconozca los archivos `.form`.
-4.  Ejecutar la clase principal que inicia la interfaz de bienvenida: `Vista.GUIInicial` (o `Main` si está configurada como entry point).
+4.  Ejecutar la clase principal que inicia la interfaz de bienvenida: `Main`.
 
 ## 4. Manual de Usuario
 
