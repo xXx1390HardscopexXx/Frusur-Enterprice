@@ -93,7 +93,7 @@ public class GUIInventarioEstadistico extends JDialog {
         panelCenter.add(panelForm, BorderLayout.NORTH);
 
         // Tabla
-        String[] cols = {"Tipo berrie", "Clasificación", "Kilos", "Detalle"};
+        String[] cols = {"Tipo Berry", "Clasificación", "Kilos", "Detalle"};
         modelTarjas = new DefaultTableModel(cols, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         };
