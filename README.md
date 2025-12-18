@@ -1,7 +1,7 @@
 # Sistema de Gestión de Compra e Inventario - Frusur
 
 ## 1. Descripción General
-**Frusur** es una aplicación de escritorio desarrollada en **Java (Swing)** bajo el patrón de arquitectura **MVC (Modelo-Vista-Controlador)**. El sistema está diseñado para digitalizar y gestionar la trazabilidad de la fruta (berries) desde su compra a productores externos hasta su procesamiento y almacenamiento en cámaras de frío.
+**Frusur** es una aplicación de escritorio desarrollada en **Java** bajo el patrón de arquitectura **MVC (Modelo-Vista-Controlador)**. El sistema está diseñado para digitalizar y gestionar la trazabilidad de la fruta (berries) desde su compra a productores externos hasta su procesamiento y almacenamiento en cámaras de frío.
 
 El software permite coordinar las operaciones entre dos roles fundamentales:
 * **Agrónomo:** Encargado de la gestión de proveedores y recepción de materia prima.
