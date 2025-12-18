@@ -99,18 +99,18 @@ public class ControladorFrusur implements Serializable {
      * Valida stock y descuenta para procesar según las tarjas de recepción.
      */
     public void consumirMateriaPrimaPorTipo(TipoBerrie tipo, double kilosRequeridos) throws CFException {
-        double stockDisponible = this.inventario.getStock(tipo, ClasificacionProducto.IQF);
+
+        double stockDisponible = this.inventario.getStockMateriaPrima(tipo); // CAMBIO
 
         if (kilosRequeridos > stockDisponible) {
-            throw new CFException("Stock insuficiente de " + tipo + ". " +
+            throw new CFException("Stock insuficiente de Materia Prima de " + tipo + ". " +
                     "Disponible: " + stockDisponible + " kg.");
         }
 
-        // LÍNEA CORREGIDA: Usamos el método de la clase Inventario
-        this.inventario.descontarMateriaPrima(tipo, kilosRequeridos);
-
-        this.totalKilosAcumulados -= kilosRequeridos;
+        this.inventario.descontarMateriaPrima(tipo, kilosRequeridos); // ahora descuenta MP real
+        this.totalKilosAcumulados -= kilosRequeridos; // (opcional, pero lo dejo como lo tienes)
     }
+
 
     public void registrarProduccion(ResumenProduccion resumen) throws CFException {
         if (resumen == null) throw new CFException("Resumen nulo.");

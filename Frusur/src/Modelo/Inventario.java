@@ -6,6 +6,7 @@ import java.util.*;
 
 public class Inventario implements Serializable {
 
+    private final Map<TipoBerrie, Double> stockMP  = new EnumMap<>(TipoBerrie.class); // NUEVO
     private final Map<TipoBerrie, Double> stockIQF = new EnumMap<>(TipoBerrie.class);
     private final Map<TipoBerrie, Double> stockSub = new EnumMap<>(TipoBerrie.class);
 
@@ -15,15 +16,22 @@ public class Inventario implements Serializable {
 
     public Inventario() {
         for (TipoBerrie t : TipoBerrie.values()) {
+            stockMP.put(t, 0.0);
             stockIQF.put(t, 0.0);
             stockSub.put(t, 0.0);
         }
     }
+    public double getStockMateriaPrima(TipoBerrie tipo) {
+        return stockMP.getOrDefault(tipo, 0.0);
+    }
+
+
 
     public void agregarFrutaDesdeRecepcion(TipoBerrie tipo, double kilos) {
-        double actual = stockIQF.getOrDefault(tipo, 0.0);
-        stockIQF.put(tipo, actual + kilos);
+        double actual = stockMP.getOrDefault(tipo, 0.0);
+        stockMP.put(tipo, actual + kilos);
     }
+
 
     public void agregarProduccion(ResumenProduccion resumen) {
         for (TipoBerrie t : TipoBerrie.values()) {
@@ -36,10 +44,10 @@ public class Inventario implements Serializable {
      * Descuenta kilos de materia prima (IQF) para pasar a producción.
      */
     public void descontarMateriaPrima(TipoBerrie tipo, double kilos) {
-        double actual = stockIQF.getOrDefault(tipo, 0.0);
-        // Ya validamos en el controlador que no sea negativo, así que restamos
-        stockIQF.put(tipo, actual - kilos);
+        double actual = stockMP.getOrDefault(tipo, 0.0);
+        stockMP.put(tipo, actual - kilos);
     }
+
 
     public double getStock(TipoBerrie tipo, ClasificacionProducto clasif) {
         return (clasif == ClasificacionProducto.IQF) ? stockIQF.get(tipo) : stockSub.get(tipo);

@@ -90,17 +90,27 @@ public class GUIInventarioFisico extends JDialog {
 
     private void verStock() {
         StringBuilder sb = new StringBuilder();
-        sb.append("STOCK IQF (kg):\n");
+
+        sb.append("STOCK MATERIA PRIMA (kg):\n");
+        for (TipoBerrie t : TipoBerrie.values()) {
+            sb.append(" - ").append(t).append(": ").append(inv().getStockMateriaPrima(t)).append("\n");
+        }
+
+        sb.append("\nSTOCK IQF (kg):\n");
         for (TipoBerrie t : TipoBerrie.values()) {
             sb.append(" - ").append(t).append(": ").append(inv().getStock(t, ClasificacionProducto.IQF)).append("\n");
         }
+
         sb.append("\nSTOCK SUBPRODUCTO (kg):\n");
         for (TipoBerrie t : TipoBerrie.values()) {
             sb.append(" - ").append(t).append(": ").append(inv().getStock(t, ClasificacionProducto.SUBPRODUCTO)).append("\n");
         }
+
         sb.append("\nCajas registradas: ").append(inv().getCantidadCajasRegistradas()).append("\n");
+
         txtSalida.setText(sb.toString());
     }
+
 
     private void crearPalet80() {
         try {
@@ -119,12 +129,14 @@ public class GUIInventarioFisico extends JDialog {
 
     private void verPalets() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PALETS EN STOCK:\n");
+        sb.append(txtSalida.getText()); // APPEND
+        sb.append("\nPALETS EN STOCK:\n");
         for (Palet p : inv().getPalets()) {
             sb.append(" - ").append(p).append("\n");
         }
         txtSalida.setText(sb.toString());
     }
+
 
     private void escanear() {
         String codigo = txtCodigoScan.getText().trim();
