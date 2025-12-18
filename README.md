@@ -41,7 +41,7 @@ Este módulo gestiona la entrada de Materia Prima al sistema.
 Este módulo descuenta materia prima y genera producto terminado.
 1.  **Iniciar Planilla:** Se debe definir una línea de proceso para el turno actual.
 2.  **Registro de Tarjas:** El operador ingresa:
-    * Tipo de Berrie (Arándano, Frutilla, etc.).
+    * Tipo de Berry (Arándano, Frutilla, etc.).
     * Clasificación (IQF o Subproducto).
     * Kilos procesados.
     * *Validación:* El sistema verifica que exista stock suficiente de materia prima antes de permitir el registro.
