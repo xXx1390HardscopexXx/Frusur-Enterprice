@@ -1,8 +1,8 @@
-package Modelo;
+    package Modelo;
 
-import java.io.Serializable;
+    import java.io.Serializable;
 
-public enum ClasificacionProducto implements Serializable {
-    IQF,
-    SUBPRODUCTO
-}
+    public enum ClasificacionProducto implements Serializable {
+        IQF,
+        SUBPRODUCTO
+    }

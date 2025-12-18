@@ -11,6 +11,8 @@ import java.awt.*;
 public class GUIInventarioEstadistico extends JDialog {
 
     private Planilla planillaActual;
+    private JButton btnInventarioFisico;
+
 
     // UI
     private JTextField txtLinea;
@@ -105,9 +107,15 @@ public class GUIInventarioEstadistico extends JDialog {
 
         // ------------------ BOTTOM: Volver ------------------
         JPanel panelBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        btnInventarioFisico = new JButton("Inventario Físico");
+        panelBottom.add(btnInventarioFisico);
+
         btnVolver = new JButton("Volver");
         panelBottom.add(btnVolver);
+
         add(panelBottom, BorderLayout.SOUTH);
+
 
         // Estado inicial
         setFormEnabled(false);
@@ -117,8 +125,10 @@ public class GUIInventarioEstadistico extends JDialog {
         btnIniciarPlanilla.addActionListener(e -> iniciarPlanilla());
         btnAgregarTarja.addActionListener(e -> agregarTarja());
         btnCerrarPlanilla.addActionListener(e -> cerrarPlanilla());
+        btnInventarioFisico.addActionListener(e -> GUIInventarioFisico.display());
         btnVolver.addActionListener(e -> dispose());
     }
+
 
     private void iniciarPlanilla() {
         String linea = txtLinea.getText().trim();
